@@ -71,16 +71,10 @@ def send_report(report_folder):
 
 
 def gen_test_suite(test_case_dir):
-    testunit = unittest.TestSuite()
     # pattern用来匹配/test_case目录下哪些用例加入本次运行
     discover = unittest.defaultTestLoader.discover(test_case_dir, pattern='test_*.py',
                                                    top_level_dir=None)
-    # discover 方法筛选出来的用例，循环添加到测试套件中
-    for test_suite in discover:
-        for test_case in test_suite:
-            testunit.addTests(test_case)
-            print(testunit)
-    return testunit
+    return discover
 
 def main():
     # 将项目的目录加载到系统变量中
