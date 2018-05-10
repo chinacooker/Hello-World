@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-@contact:    yufei@baixing.com
+@contact:    mijiawei@baixing.com
 @desc:       邮件通知
 """
 import argparse
@@ -16,6 +16,7 @@ from email.mime.application import MIMEApplication
 from email import encoders
 from report_info import HTMLTestRunner
 import configparser
+from report_info import const
 
 
 
@@ -69,28 +70,21 @@ def send_report(report_folder):
     # 调用发邮件模块
     send_mail(file_new,report_folder)
 
-
 def gen_test_suite(test_case_dir):
-    # pattern用来匹配/test_case目录下哪些用例加入本次运行
-    discover = unittest.defaultTestLoader.discover(test_case_dir, pattern='test_*.py',
-                                                   top_level_dir=None)
-    return discover
+    discover = unittest.defaultTestLoader.discover(test_case_dir, pattern='test_*.py',top_level_dir=None)
+    return discover  #筛选出需要执行的case
 
 def main():
-    # 将项目的目录加载到系统变量中
     parser = argparse.ArgumentParser()
-    parser.add_argument("-d", help="test_case directory")
+    parser.add_argument("-d", help="test_case directory")   #定义参数
     args = parser.parse_args()
-    test_case_dir = args.d
-    root = os.path.join(test_case_dir, '..')
-    # 获取系统当前日期
+    test_case_dir = args.d         #需要传入的参数
     now = time.strftime("%Y-%m-%d %H_%M_%S")
-    os.environ['WEBSERVICE_ITERATION_RUN_TIME'] = now
-
-    report_folder = root + os.sep + 'report' + os.sep
+    report_folder =test_case_dir+const.report_dir
     filename = report_folder + now + '_result.html'  # 测试报告的路径名
-    fp = open(filename, 'wb+')
 
+    """文件打开-操作-关闭闭环"""
+    fp = open(filename, 'wb+')
     runner = HTMLTestRunner.HTMLTestRunner(
         stream=fp,
         title=u'SmokeTest自动化测试报告',
@@ -98,17 +92,10 @@ def main():
         verbosity=2,
         )
     all_test_units = gen_test_suite(test_case_dir)
-    # 获得报错数
-
-
-    err_num = runner.run(all_test_units).__repr__()  #执行case
-
-
-
-    failcasename = HTMLTestRunner.failcasename
+    err_num = runner.run(all_test_units).__repr__()  #执行case_and获得报错数
     fp.close()  # 关闭生成的报告
-
-
+    """文件打开-操作-关闭闭环"""
+    failcasename = HTMLTestRunner.failcasename
     send_report(report_folder)  # 发送报告
 
 

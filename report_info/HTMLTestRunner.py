@@ -787,7 +787,7 @@ class HTMLTestRunner(Template_mixin):
         if isinstance(e, str):
             # ue = unicode(e.encode('string_escape'))
             ue = e
-            
+
         else:
             ue = e
 
