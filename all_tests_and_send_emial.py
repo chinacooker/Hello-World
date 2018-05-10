@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-@contact:    mijiawei@baixing.com
+@contact:    yufei@baixing.com
 @desc:       邮件通知
 """
 import argparse
