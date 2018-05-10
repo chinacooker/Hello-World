@@ -1,5 +1,3 @@
-# Hello-World
-第一次使用github进行创建的操作
-为了python
-为了各种pull
-为了未来
+本项目目的是个人学习python，selenium，unitest，github
+基于python3.6
+自动生成测试报告HTML版，自动发送邮件并将测试报告添加到附加
