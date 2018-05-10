@@ -6,11 +6,8 @@ import sys
 import unittest
 from xml.sax import saxutils
 
-PY3K = (sys.version_info[0] > 2)
-if PY3K:
-    import io as StringIO
-else:
-    import StringIO
+
+import io
 
 class OutputRedirector(object):
     """ Wrapper to redirect stdout or stderr """
@@ -483,13 +480,8 @@ a.popup_link:hover {
 
     def __getattribute__(self, item):
         value = object.__getattribute__(self, item)
-        if PY3K:
-            return value
-        else:
-            if isinstance(value, str):
-                return value.decode("utf-8")
-            else:
-                return value
+        return value
+
 
 
 
@@ -526,7 +518,7 @@ class _TestResult(TestResult):
     def startTest(self, test):
         TestResult.startTest(self, test)
         test.img = ""
-        self.outputBuffer = StringIO.StringIO()
+        self.outputBuffer = io.StringIO()
         stdout_redirector.fp = self.outputBuffer
         stderr_redirector.fp = self.outputBuffer
         self.stdout0 = sys.stdout
@@ -650,13 +642,8 @@ class HTMLTestRunner(Template_mixin):
         test(result)
         self.stopTime = datetime.datetime.now()
         self.generateReport(test, result)
-        if PY3K:
-            # for python3
-            # print('\nTime Elapsed: %s' % (self.stopTime - self.startTime),file=sys.stderr)
-            output = '\nTime Elapsed: %s' % (self.stopTime - self.startTime)
-            sys.stderr.write(output)
-        else:
-            print >> sys.stderr, '\nTime Elapsed: %s' % (self.stopTime - self.startTime)
+        output = '\nTime Elapsed: %s' % (self.stopTime - self.startTime)
+        sys.stderr.write(output)
         return result
 
     def sortResult(self, result_list):
@@ -713,10 +700,7 @@ class HTMLTestRunner(Template_mixin):
             report=report,
             ending=ending,
         )
-        if PY3K:
-            self.stream.write(output.encode())
-        else:
-            self.stream.write(output.encode('utf8'))
+        self.stream.write(output.encode())
 
     def _generate_stylesheet(self):
         return self.STYLESHEET_TMPL
@@ -795,29 +779,15 @@ class HTMLTestRunner(Template_mixin):
         else:
             doc = ""
         desc = doc and ('%s: %s' % (name, doc)) or name
-        if not PY3K:
-            if isinstance(desc, str):
-                desc = desc.decode("utf-8")
         tmpl = has_output and self.REPORT_TEST_WITH_OUTPUT_TMPL or self.REPORT_TEST_NO_OUTPUT_TMPL
 
         if isinstance(o, str):
             # uo = unicode(o.encode('string_escape'))
-            if PY3K:
-                uo = o
-            else:
-                uo = o.decode('utf-8', 'ignore')
-        else:
             uo = o
         if isinstance(e, str):
             # ue = unicode(e.encode('string_escape'))
-            if PY3K:
-                ue = e
-            elif e.find("AssertionError") != -1:
-                es = e.decode('utf-8', 'ignore').split('\n')
-                es[-2] = es[-2].decode('unicode_escape')
-                ue = u"\n".join(es)
-            else:
-                ue = e.decode('utf-8', 'ignore')
+            ue = e
+            
         else:
             ue = e
 
